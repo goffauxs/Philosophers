@@ -6,7 +6,7 @@
 /*   By: sgoffaux <sgoffaux@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/13 12:06:45 by sgoffaux          #+#    #+#             */
-/*   Updated: 2021/07/13 16:12:52 by sgoffaux         ###   ########.fr       */
+/*   Updated: 2021/07/14 14:31:55 by sgoffaux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,11 @@
 
 typedef struct s_philo
 {
-	
+	int				is_eating;
+	int				pos;
+	int				lfork;
+	int				rfork;
+	pthread_mutex_t	mutex;
 }				t_philo;
 
 typedef struct s_env
@@ -33,7 +37,8 @@ typedef struct s_env
 	int	time_to_eat;
 	int	time_to_sleep;
 	int	eat_count_min;
-	
+	t_philo	*philos;
+	pthread_mutex_t	*forks;
 }				t_env;
 
 int	ft_atoi(const char *nptr);
