@@ -6,7 +6,7 @@
 /*   By: sgoffaux <sgoffaux@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/13 12:06:45 by sgoffaux          #+#    #+#             */
-/*   Updated: 2021/07/14 14:31:55 by sgoffaux         ###   ########.fr       */
+/*   Updated: 2021/08/25 14:13:13 by sgoffaux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ typedef struct s_philo
 	int				lfork;
 	int				rfork;
 	pthread_mutex_t	mutex;
+	int				time_since_last_ate;
 }				t_philo;
 
 typedef struct s_env
