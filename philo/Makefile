@@ -6,7 +6,7 @@
 #    By: sgoffaux <sgoffaux@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/08/25 12:00:15 by sgoffaux          #+#    #+#              #
-#    Updated: 2021/08/25 12:07:47 by sgoffaux         ###   ########.fr        #
+#    Updated: 2021/08/30 14:52:46 by sgoffaux         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,6 +19,7 @@ RM		=	rm -f
 
 SRCS	=	philosophers.c \
 			srcs/utils.c \
+			srcs/atoitoa.c \
 
 OBJS	=	$(SRCS:%.c=%.o)
 
