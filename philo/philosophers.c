@@ -6,7 +6,7 @@
 /*   By: sgoffaux <sgoffaux@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/13 13:17:49 by sgoffaux          #+#    #+#             */
-/*   Updated: 2021/08/30 15:53:05 by sgoffaux         ###   ########.fr       */
+/*   Updated: 2021/08/31 15:57:28 by sgoffaux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,19 @@ static unsigned long	get_time(void)
 
 	gettimeofday(&time, NULL);
 	return ((time.tv_sec * (unsigned long)1000) + (time.tv_usec / 1000));
+}
+
+static void new_sleep(unsigned long duration, t_env *env)
+{
+	unsigned long end;
+
+	end = get_time() + duration;
+	while (!env->stop_condition)
+	{
+		if (get_time() > end)
+			break ;
+		usleep(50);
+	}
 }
 
 static void	philo_print(char *msg, t_philo *philo)
@@ -44,21 +57,27 @@ static void	philo_print(char *msg, t_philo *philo)
 
 static void philo_eat(t_philo *philo)
 {
-	t_env	*env;
-	
-	env = philo->env;
-	pthread_mutex_lock(&env->forks[philo->lfork]);
+	if (philo->pos % 2)
+	{
+		pthread_mutex_lock(&philo->env->forks[philo->lfork]);
+		philo_print("has taken a fork", philo);
+		pthread_mutex_lock(&philo->env->forks[philo->rfork]);
+	}
+	else
+	{
+		pthread_mutex_lock(&philo->env->forks[philo->rfork]);
+		philo_print("has taken a fork", philo);
+		pthread_mutex_lock(&philo->env->forks[philo->lfork]);
+	}
 	philo_print("has taken a fork", philo);
-	pthread_mutex_lock(&env->forks[philo->rfork]);
-	philo_print("has taken a fork", philo);
-	pthread_mutex_lock(&env->meal);
+	pthread_mutex_lock(&philo->env->meal);
 	philo_print("is eating", philo);
 	philo->last_ate = get_time();
-	pthread_mutex_unlock(&env->meal);
-	usleep(env->time_to_eat * 1000);
+	pthread_mutex_unlock(&philo->env->meal);
+	new_sleep(philo->env->time_to_eat, philo->env);
 	philo->ate_times++;
-	pthread_mutex_unlock(&env->forks[philo->lfork]);
-	pthread_mutex_unlock(&env->forks[philo->rfork]);
+	pthread_mutex_unlock(&philo->env->forks[philo->rfork]);
+	pthread_mutex_unlock(&philo->env->forks[philo->lfork]);
 }
 
 static void philo_dead(t_env *env, t_philo *philo)
@@ -99,13 +118,11 @@ void	*routine(void *params)
 	i = 0;
 	philo = (t_philo *)params;
 	env = philo->env;
-	if ((philo->pos - 1) % 2)
-		usleep(15000);
 	while (!env->stop_condition)
 	{
 		philo_eat(philo);
 		philo_print("is sleeping", philo);
-		usleep(env->time_to_sleep * 1000);
+		new_sleep(env->time_to_sleep, env);
 		philo_print("is thinking", philo);
 	}
 	return (NULL);
