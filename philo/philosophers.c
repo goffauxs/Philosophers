@@ -6,7 +6,7 @@
 /*   By: sgoffaux <sgoffaux@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/13 13:17:49 by sgoffaux          #+#    #+#             */
-/*   Updated: 2021/08/31 15:57:28 by sgoffaux         ###   ########.fr       */
+/*   Updated: 2021/09/01 15:22:06 by sgoffaux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static void new_sleep(unsigned long duration, t_env *env)
 	end = get_time() + duration;
 	while (!env->stop_condition)
 	{
-		if (get_time() > end)
+		if (get_time() >= end)
 			break ;
 		usleep(50);
 	}
@@ -41,7 +41,7 @@ static void	philo_print(char *msg, t_philo *philo)
 	timestamp = ft_itoa(get_time() - philo->env->start_time);
 	philo_num = ft_itoa((int)philo->pos);
 	pthread_mutex_lock(&philo->env->writing);
-	if (!philo->env->stop_condition)
+	if (!philo->env->stop_condition && !philo->env->max_ate)
 	{
 		write(1, timestamp, ft_strlen(timestamp));
 		write(1, " ", 1);
@@ -118,7 +118,7 @@ void	*routine(void *params)
 	i = 0;
 	philo = (t_philo *)params;
 	env = philo->env;
-	while (!env->stop_condition)
+	while (!env->stop_condition && !env->max_ate)
 	{
 		philo_eat(philo);
 		philo_print("is sleeping", philo);
@@ -132,20 +132,26 @@ static int	start_threads(t_env *env)
 {
 	int	i;
 
-	i = -1;
+	i = 0;
 	env->start_time = get_time();
-	while (++i < env->count)
+	while (i < env->count)
 	{
 		if (pthread_create(&(env->philos[i].thread_id),
 			NULL, routine, &(env->philos[i])))
 			return (1);
 		env->philos[i].last_ate = get_time();
 		env->philos[i].limit = env->philos[i].last_ate + env->time_to_die;
+		i++;
 	}
 	philo_dead(env, env->philos);
-	i = -1;
-	while (++i < env->count)
-		pthread_join(env->philos[i].thread_id, NULL);
+	if (env->count == 1)
+		pthread_detach(env->philos[0].thread_id);
+	else
+	{
+		i = -1;
+		while (++i < env->count)
+			pthread_join(env->philos[i].thread_id, NULL);
+	}
 	i = -1;
 	while (++i < env->count)
 		pthread_mutex_destroy(&env->forks[i]);
@@ -195,12 +201,12 @@ static int	ft_init(t_env *env, int argc, char *argv[])
 	if (argc == 6)
 	{
 		env->eat_count_max = ft_atoi(argv[5]);
-		if (env->eat_count_max < 0)
+		if (env->eat_count_max <= 0)
 			return (1);
 	}
 	else
 		env->eat_count_max = 0;
-	if (env->count < 2 || env->count > 200 || env->time_to_die < 60
+	if (env->count < 1 || env->count > 200 || env->time_to_die < 60
 		|| env->time_to_eat < 60 || env->time_to_sleep < 60
 		|| env->eat_count_max < 0)
 		return (0);
@@ -215,14 +221,32 @@ static int	ft_init(t_env *env, int argc, char *argv[])
 	return (1);
 }
 
+static int	ft_check_params(int argc, char *argv[])
+{
+	int	i;
+
+	i = 1;
+	while (i < argc)
+	{
+		if (!ft_isint(argv[i]))
+			return (0);
+		if (ft_atoi(argv[i]) < 0)
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
 int	main(int argc, char *argv[])
 {
 	t_env	env;
+
 	env.max_ate = 0;
 	env.stop_condition = 0;
-	
 	if (argc < 5 || argc > 6)
 		return (ft_return_error(ERR_USAGE));
+	if (!ft_check_params(argc, argv))
+		return (ft_return_error("Incorrect parameters.\n"));
 	if (!ft_init(&env, argc, argv))
 		return (ft_return_error("init error.\n"));
 	if (start_threads(&env))

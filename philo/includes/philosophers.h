@@ -6,7 +6,7 @@
 /*   By: sgoffaux <sgoffaux@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/13 12:06:45 by sgoffaux          #+#    #+#             */
-/*   Updated: 2021/08/30 15:10:39 by sgoffaux         ###   ########.fr       */
+/*   Updated: 2021/09/01 15:09:30 by sgoffaux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,5 +55,6 @@ int		ft_atoi(const char *nptr);
 int		ft_return_error(char *msg);
 int		ft_strlen(char *str);
 char	*ft_itoa(int nbr);
+int		ft_isint(const char *nptr);
 
 #endif
