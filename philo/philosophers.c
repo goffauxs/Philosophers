@@ -6,7 +6,7 @@
 /*   By: sgoffaux <sgoffaux@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/13 13:17:49 by sgoffaux          #+#    #+#             */
-/*   Updated: 2021/09/01 15:22:06 by sgoffaux         ###   ########.fr       */
+/*   Updated: 2021/09/02 14:29:53 by sgoffaux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static void new_sleep(unsigned long duration, t_env *env)
 	{
 		if (get_time() >= end)
 			break ;
-		usleep(50);
+		usleep(1000);
 	}
 }
 
@@ -37,7 +37,7 @@ static void	philo_print(char *msg, t_philo *philo)
 {
 	char	*timestamp;
 	char	*philo_num;
-	
+
 	timestamp = ft_itoa(get_time() - philo->env->start_time);
 	philo_num = ft_itoa((int)philo->pos);
 	pthread_mutex_lock(&philo->env->writing);
@@ -55,6 +55,31 @@ static void	philo_print(char *msg, t_philo *philo)
 	free(philo_num);
 }
 
+// static void test_print(t_philo *philo, int fork)
+// {
+// 	char	*timestamp;
+// 	char	*philo_num;
+// 	char	*fork_id;
+	
+// 	timestamp = ft_itoa(get_time() - philo->env->start_time);
+// 	philo_num = ft_itoa(philo->pos);
+// 	fork_id = ft_itoa(fork);
+// 	pthread_mutex_lock(&philo->env->writing);
+// 	if (!philo->env->stop_condition && !philo->env->max_ate)
+// 	{
+// 		write(1, timestamp, ft_strlen(timestamp));
+// 		write(1, " ", 1);
+// 		write(1, philo_num, ft_strlen(philo_num));
+// 		write(1, " has taken fork #", 17);
+// 		write(1, fork_id, ft_strlen(fork_id));
+// 		write(1, "\n", 1);
+// 	}
+// 	pthread_mutex_unlock(&philo->env->writing);
+// 	free(timestamp);
+// 	free(philo_num);
+// 	free(fork_id);
+// }
+
 static void philo_eat(t_philo *philo)
 {
 	if (philo->pos % 2)
@@ -62,14 +87,15 @@ static void philo_eat(t_philo *philo)
 		pthread_mutex_lock(&philo->env->forks[philo->lfork]);
 		philo_print("has taken a fork", philo);
 		pthread_mutex_lock(&philo->env->forks[philo->rfork]);
+		philo_print("has taken a fork", philo);
 	}
 	else
 	{
 		pthread_mutex_lock(&philo->env->forks[philo->rfork]);
 		philo_print("has taken a fork", philo);
 		pthread_mutex_lock(&philo->env->forks[philo->lfork]);
+		philo_print("has taken a fork", philo);
 	}
-	philo_print("has taken a fork", philo);
 	pthread_mutex_lock(&philo->env->meal);
 	philo_print("is eating", philo);
 	philo->last_ate = get_time();
@@ -118,6 +144,8 @@ void	*routine(void *params)
 	i = 0;
 	philo = (t_philo *)params;
 	env = philo->env;
+	if (philo->pos % 2)
+		usleep(50);
 	while (!env->stop_condition && !env->max_ate)
 	{
 		philo_eat(philo);
@@ -192,24 +220,8 @@ static void ft_init_philo(t_env *env)
 	}
 }
 
-static int	ft_init(t_env *env, int argc, char *argv[])
+static int	ft_init(t_env *env)
 {
-	env->count = ft_atoi(argv[1]);
-	env->time_to_die = ft_atoi(argv[2]);
-	env->time_to_eat = ft_atoi(argv[3]);
-	env->time_to_sleep = ft_atoi(argv[4]);
-	if (argc == 6)
-	{
-		env->eat_count_max = ft_atoi(argv[5]);
-		if (env->eat_count_max <= 0)
-			return (1);
-	}
-	else
-		env->eat_count_max = 0;
-	if (env->count < 1 || env->count > 200 || env->time_to_die < 60
-		|| env->time_to_eat < 60 || env->time_to_sleep < 60
-		|| env->eat_count_max < 0)
-		return (0);
 	env->philos = malloc(sizeof(t_philo) * env->count);
 	if (!env->philos)
 		return (0);
@@ -221,7 +233,7 @@ static int	ft_init(t_env *env, int argc, char *argv[])
 	return (1);
 }
 
-static int	ft_check_params(int argc, char *argv[])
+static int	ft_check_params(t_env *env, int argc, char *argv[])
 {
 	int	i;
 
@@ -234,6 +246,22 @@ static int	ft_check_params(int argc, char *argv[])
 			return (0);
 		i++;
 	}
+	env->count = ft_atoi(argv[1]);
+	env->time_to_die = ft_atoi(argv[2]);
+	env->time_to_eat = ft_atoi(argv[3]);
+	env->time_to_sleep = ft_atoi(argv[4]);
+	if (argc == 6)
+	{
+		env->eat_count_max = ft_atoi(argv[5]);
+		if (env->eat_count_max <= 0)
+			return (0);
+	}
+	else
+		env->eat_count_max = 0;
+	if (env->count < 1 || env->count > 200 || env->time_to_die < 60
+		|| env->time_to_eat < 60 || env->time_to_sleep < 60
+		|| env->eat_count_max < 0)
+		return (0);
 	return (1);
 }
 
@@ -245,9 +273,9 @@ int	main(int argc, char *argv[])
 	env.stop_condition = 0;
 	if (argc < 5 || argc > 6)
 		return (ft_return_error(ERR_USAGE));
-	if (!ft_check_params(argc, argv))
+	if (!ft_check_params(&env, argc, argv))
 		return (ft_return_error("Incorrect parameters.\n"));
-	if (!ft_init(&env, argc, argv))
+	if (!ft_init(&env))
 		return (ft_return_error("init error.\n"));
 	if (start_threads(&env))
 		return (ft_return_error("threads error.\n"));
