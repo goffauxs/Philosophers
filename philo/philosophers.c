@@ -6,7 +6,7 @@
 /*   By: sgoffaux <sgoffaux@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/13 13:17:49 by sgoffaux          #+#    #+#             */
-/*   Updated: 2021/09/02 14:29:53 by sgoffaux         ###   ########.fr       */
+/*   Updated: 2021/09/03 11:40:11 by sgoffaux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static void new_sleep(unsigned long duration, t_env *env)
 	{
 		if (get_time() >= end)
 			break ;
-		usleep(1000);
+		usleep(50);
 	}
 }
 
@@ -148,10 +148,10 @@ void	*routine(void *params)
 		usleep(50);
 	while (!env->stop_condition && !env->max_ate)
 	{
+		philo_print("is thinking", philo);
 		philo_eat(philo);
 		philo_print("is sleeping", philo);
 		new_sleep(env->time_to_sleep, env);
-		philo_print("is thinking", philo);
 	}
 	return (NULL);
 }
