@@ -6,7 +6,7 @@
 /*   By: sgoffaux <sgoffaux@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/13 12:06:45 by sgoffaux          #+#    #+#             */
-/*   Updated: 2021/09/02 14:29:29 by sgoffaux         ###   ########.fr       */
+/*   Updated: 2021/09/06 11:13:20 by sgoffaux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@ typedef struct s_philo
 {
 	int				ate_times;
 	int				pos;
-	int				lfork;
-	int				rfork;
+	int				ffork;
+	int				sfork;
 	unsigned long	last_ate;
 	unsigned long	limit;
 	struct s_env	*env;
