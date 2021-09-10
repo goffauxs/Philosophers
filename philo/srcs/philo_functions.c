@@ -6,7 +6,7 @@
 /*   By: sgoffaux <sgoffaux@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/10 10:10:57 by sgoffaux          #+#    #+#             */
-/*   Updated: 2021/09/10 10:31:35 by sgoffaux         ###   ########.fr       */
+/*   Updated: 2021/09/10 10:58:01 by sgoffaux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,10 @@ void	philo_print(char *msg, t_philo *philo)
 {
 	char	*timestamp;
 
-	pthread_mutex_lock(&philo->env->writing);
 	timestamp = ft_itoa(get_time() - philo->env->start_time);
+	pthread_mutex_lock(&philo->env->writing);
 	if (!philo->env->stop_condition && !philo->env->max_ate)
-	{
 		printf("%s %s %s\n", timestamp, philo->pos_str, msg);
-	}
 	pthread_mutex_unlock(&philo->env->writing);
 	free(timestamp);
 }
