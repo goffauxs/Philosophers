@@ -6,7 +6,7 @@
 /*   By: sgoffaux <sgoffaux@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/13 13:17:49 by sgoffaux          #+#    #+#             */
-/*   Updated: 2021/09/06 14:29:17 by sgoffaux         ###   ########.fr       */
+/*   Updated: 2021/09/10 10:04:44 by sgoffaux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static void new_sleep(unsigned long duration, t_env *env)
 	{
 		if (get_time() - start >= duration)
 			break ;
-		usleep(500);
+		usleep(env->count * 2);
 	}
 }
 
