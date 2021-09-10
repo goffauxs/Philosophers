@@ -6,31 +6,52 @@
 /*   By: sgoffaux <sgoffaux@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/13 15:01:47 by sgoffaux          #+#    #+#             */
-/*   Updated: 2021/09/01 15:06:42 by sgoffaux         ###   ########.fr       */
+/*   Updated: 2021/09/09 13:34:39 by sgoffaux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-int	ft_strlen(char *str)
+struct timeval	get_time(void)
 {
-	int	i;
+	struct timeval	time;
 
-	i = 0;
-	while (str[i])
-		i++;
-	return (i);
+	gettimeofday(&time, NULL);
+	return (time);
 }
 
-int	ft_return_error(char *msg)
+void	new_sleep(unsigned long duration, t_env *env)
 {
-	write(2, msg, ft_strlen(msg));
-	return (0);
+	struct timeval	start;
+
+	start = get_time();
+	while (!env->stop_condition)
+	{
+		if (time_diff_micro(start, get_time()) >= duration)
+			break ;
+		if (time_diff_micro(start, get_time()) / (double)duration > 0.9)
+			usleep(100);
+		else
+			usleep(1000);
+	}
 }
 
-static int	ft_isdigit(char c)
+unsigned long	time_diff_micro(struct timeval start, struct timeval end)
 {
-	return (c >= 48 && c <= 57);
+	unsigned long	microseconds;
+
+	microseconds = (end.tv_sec - start.tv_sec) * 1000000;
+	microseconds += (end.tv_usec - start.tv_usec);
+	return (microseconds);
+}
+
+int	time_diff_milli(struct timeval start, struct timeval end)
+{
+	int milliseconds;
+
+	milliseconds = (end.tv_sec - start.tv_sec) * 1000;
+	milliseconds += (end.tv_usec - start.tv_usec) / 1000;
+	return (milliseconds);
 }
 
 int	ft_isint(const char *nptr)
@@ -48,7 +69,7 @@ int	ft_isint(const char *nptr)
 		neg = 1;
 	if (nptr[i] == '-' || nptr[i] == '+')
 		i++;
-	while (nptr[i] != '\0' && ft_isdigit(nptr[i]))
+	while (nptr[i] != '\0' && (nptr[i] >= 48 && nptr[i] <= 57))
 	{
 		if (value > 214748364 || (value == 214748364
 				&& ((!neg && nptr[i] - '0' > 7) || (neg && nptr[i] - '0' > 8))))
