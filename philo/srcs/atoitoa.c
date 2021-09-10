@@ -6,11 +6,21 @@
 /*   By: sgoffaux <sgoffaux@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/30 13:51:45 by sgoffaux          #+#    #+#             */
-/*   Updated: 2021/08/30 13:52:38 by sgoffaux         ###   ########.fr       */
+/*   Updated: 2021/09/09 13:41:28 by sgoffaux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
+
+int	ft_strlen(char *msg)
+{
+	int	i;
+
+	i = 0;
+	while (msg[i])
+		i++;
+	return (i);
+}
 
 static int	ft_getlen(int n)
 {
@@ -73,13 +83,6 @@ char	*ft_itoa(int n)
 	return (ret);
 }
 
-static int	ft_isdigit(int c)
-{
-	if (c >= 48 && c <= 57)
-		return (1);
-	return (0);
-}
-
 int	ft_atoi(const char *nptr)
 {
 	int		i;
@@ -95,7 +98,7 @@ int	ft_atoi(const char *nptr)
 		neg = 1;
 	if (nptr[i] == '-' || nptr[i] == '+')
 		i++;
-	while (nptr[i] != '\0' && ft_isdigit(nptr[i]))
+	while (nptr[i] != '\0' && (nptr[i] >= 48 && nptr[i] <= 57))
 	{
 		if (value > 922337203685477580 || (value == 922337203685477580
 				&& ((!neg && nptr[i] - '0' > 7) || (neg && nptr[i] - '0' > 8))))
