@@ -6,7 +6,7 @@
 /*   By: sgoffaux <sgoffaux@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/13 13:17:49 by sgoffaux          #+#    #+#             */
-/*   Updated: 2021/09/10 10:15:38 by sgoffaux         ###   ########.fr       */
+/*   Updated: 2021/09/10 10:55:36 by sgoffaux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,8 @@ static int	ft_check_params(t_env *env, int argc, char *argv[])
 		env->eat_count_max = ft_atoi(argv[5]);
 	else
 		env->eat_count_max = 0;
-	if (env->count < 1 || env->time_to_die < 0
-		|| env->time_to_eat < 0 || env->time_to_sleep < 0
-		|| env->eat_count_max < 0)
+	if (env->count < 1 || env->time_to_die < 0 || env->time_to_eat < 0
+		|| env->time_to_sleep < 0 || env->eat_count_max < 0)
 		return (0);
 	return (1);
 }
