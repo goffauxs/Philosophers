@@ -6,7 +6,7 @@
 /*   By: sgoffaux <sgoffaux@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/13 13:17:49 by sgoffaux          #+#    #+#             */
-/*   Updated: 2021/09/10 10:55:36 by sgoffaux         ###   ########.fr       */
+/*   Updated: 2022/09/21 11:23:37 by sgoffaux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ int	main(int argc, char *argv[])
 		return (ft_return_error("Incorrect parameters.\n"));
 	if (!ft_init(&env))
 		return (ft_return_error("init error.\n"));
-	if (start_threads(&env))
+	if (!start_threads(&env))
 		return (ft_return_error("threads error.\n"));
 	return (0);
 }

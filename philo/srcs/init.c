@@ -6,7 +6,7 @@
 /*   By: sgoffaux <sgoffaux@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/10 10:10:05 by sgoffaux          #+#    #+#             */
-/*   Updated: 2021/09/10 10:24:13 by sgoffaux         ###   ########.fr       */
+/*   Updated: 2022/09/21 11:31:18 by sgoffaux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,14 @@ static int	ft_init_mutex(t_env *env)
 			return (1);
 		i++;
 	}
-	pthread_mutex_init(&env->meal, NULL);
-	pthread_mutex_init(&env->writing, NULL);
+	if (pthread_mutex_init(&env->meal, NULL))
+		return (1);
+	if (pthread_mutex_init(&env->writing, NULL))
+		return (1);
 	return (0);
 }
 
-static void	ft_init_philo(t_env *env)
+static int	ft_init_philo(t_env *env)
 {
 	int	i;
 
@@ -38,11 +40,23 @@ static void	ft_init_philo(t_env *env)
 		env->philos[i].ate_times = 0;
 		env->philos[i].pos = i + 1;
 		env->philos[i].pos_str = ft_itoa(i + 1);
+		if (!env->philos[i].pos_str)
+			break ;
 		env->philos[i].ffork = i;
 		env->philos[i].sfork = (i + 1) % env->count;
 		env->philos[i].env = env;
 		i++;
 	}
+	if (i != env->count)
+	{
+		while (i >= 0)
+		{
+			free(env->philos[i].pos_str);
+			i--;
+		}
+		return (1);
+	}
+	return (0);
 }
 
 int	ft_init(t_env *env)
@@ -52,8 +66,21 @@ int	ft_init(t_env *env)
 		return (0);
 	env->forks = malloc(sizeof(pthread_mutex_t) * env->count);
 	if (!env->forks)
+	{
+		free(env->philos);
 		return (0);
-	ft_init_mutex(env);
-	ft_init_philo(env);
+	}
+	if (ft_init_mutex(env))
+	{
+		free(env->philos);
+		free(env->forks);
+		return (0);
+	}
+	if (ft_init_philo(env))
+	{
+		free(env->philos);
+		free(env->forks);
+		return (0);
+	}
 	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: sgoffaux <sgoffaux@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/10 10:12:03 by sgoffaux          #+#    #+#             */
-/*   Updated: 2021/09/10 10:54:11 by sgoffaux         ###   ########.fr       */
+/*   Updated: 2022/09/21 11:30:49 by sgoffaux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,9 @@ static void	*routine(void *params)
 	while (!env->stop_condition && !env->max_ate)
 	{
 		philo_eat(philo);
-		philo_print("is sleeping", philo);
+		philo_print("is sleeping", philo, UNLOCK);
 		new_sleep(env->time_to_sleep, env);
-		philo_print("is thinking", philo);
+		philo_print("is thinking", philo, UNLOCK);
 	}
 	return (NULL);
 }
@@ -68,10 +68,10 @@ int	start_threads(t_env *env)
 		env->philos[i].last_ate = get_time();
 		if (pthread_create(&env->philos[i].thread_id,
 				NULL, routine, &(env->philos[i])))
-			return (1);
+			return (0);
 	}
 	philo_dead(env, env->philos);
 	pthread_mutex_unlock(&env->writing);
 	exit_threads(env);
-	return (0);
+	return (1);
 }

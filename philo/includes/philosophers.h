@@ -6,7 +6,7 @@
 /*   By: sgoffaux <sgoffaux@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/13 12:06:45 by sgoffaux          #+#    #+#             */
-/*   Updated: 2021/09/10 10:50:29 by sgoffaux         ###   ########.fr       */
+/*   Updated: 2022/09/21 11:31:37 by sgoffaux         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 
 # define ERR_USAGE "Usage: ./philo <# philosophers> <time to die> <time to eat>\
  <time to sleep> [# times each philosopher must eat]\n"
+# define UNLOCK 1
+# define LOCK 0
 
 struct	s_env;
 
@@ -57,7 +59,7 @@ int				ft_strlen(char *str);
 char			*ft_itoa(int nbr);
 int				ft_isint(const char *nptr);
 int				ft_init(t_env *env);
-void			philo_print(char *msg, t_philo *philo);
+void			philo_print(char *msg, t_philo *philo, int unlock);
 void			philo_eat(t_philo *philo);
 void			philo_dead(t_env *env, t_philo *philo);
 int				start_threads(t_env *env);
